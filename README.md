@@ -1,5 +1,11 @@
 # Sentinel AML Engine
 
+## Demo
+
+<video src="https://github.com/Tush1810/sentinel-aml-engine/raw/main/docs/sentinel-demo.mp4" controls width="100%"></video>
+
+If the player does not load, [open the recording](docs/sentinel-demo.mp4) directly.
+
 ## 1. What the engine does
 
 The engine is a Kafka consumer that runs continuously and serves no HTTP
