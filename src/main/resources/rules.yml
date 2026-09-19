@@ -1,0 +1,64 @@
+# AML rule book. Thresholds, windows and toggles are tuned here;
+# adding a rule is a new entry, no code change.
+sentinel:
+  rules:
+    - code: CTR_THRESHOLD
+      typology: Threshold Reporting
+      enabled: true
+      weight: 50
+      type: SINGLE_TRANSACTION
+      threshold: 10000
+      condition: "amountBase >= 10000"
+      explanation: "Single transaction of {amount} on {account} is at or above the {threshold} reporting threshold."
+
+    - code: HIGH_RISK_JURISDICTION
+      typology: High-Risk Jurisdiction
+      enabled: true
+      weight: 70
+      type: SINGLE_TRANSACTION
+      condition: "counterpartyCountry != null and {'IR','KP','SY','MM','AF','YE','AE'}.contains(counterpartyCountry)"
+      explanation: "Transaction of {amount} on {account} involves counterparty jurisdiction {country}, which is on the high-risk list."
+
+    - code: STRUCTURING
+      typology: Structuring / Smurfing
+      enabled: true
+      weight: 60
+      type: WINDOWED_COUNT
+      scope: ACCOUNT
+      window-hours: 24
+      filter: "amountBase >= 9000 and amountBase <= 9999"
+      threshold: 3
+      explanation: "{count} transactions totalling {total} on {account} within {window} hours, each just below the reporting threshold."
+
+    - code: ROUND_NUMBER
+      typology: Round-Number Pattern
+      enabled: true
+      weight: 40
+      type: WINDOWED_COUNT
+      scope: ACCOUNT
+      window-hours: 168
+      filter: "amountBase >= 10000 and amountBase % 10000 == 0"
+      threshold: 3
+      explanation: "{count} suspiciously round transactions totalling {total} on {account} within {window} hours."
+
+    - code: RAPID_MOVEMENT
+      typology: Rapid Movement of Funds
+      enabled: true
+      weight: 65
+      type: INFLOW_OUTFLOW_RATIO
+      scope: ACCOUNT
+      window-hours: 48
+      threshold: 80
+      explanation: "{outflow} of {inflow} received ({ratio}%) left {account} within {window} hours, consistent with layering."
+
+    - code: BEHAVIORAL_DEVIATION
+      typology: Behavioural Deviation
+      enabled: true
+      weight: 55
+      type: BASELINE_DEVIATION
+      scope: CUSTOMER
+      window-hours: 24
+      baseline-days: 90
+      min-baseline-txns: 5
+      threshold: 10
+      explanation: "Customer {customer} moved {actual} in 24 hours against a {baselineDays}-day daily average of {average}, exceeding {multiplier}x."

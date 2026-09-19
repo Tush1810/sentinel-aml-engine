@@ -1,0 +1,28 @@
+{
+  "name": "sentinel-txn-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "tasks.max": "1",
+
+    "database.hostname": "localhost",
+    "database.port": "5432",
+    "database.user": "catalog",
+    "database.password": "catalog",
+    "database.dbname": "sentinel",
+
+    "plugin.name": "pgoutput",
+    "slot.name": "sentinel_engine",
+    "publication.name": "sentinel_engine_pub",
+    "publication.autocreate.mode": "filtered",
+
+    "topic.prefix": "sentinel",
+    "table.include.list": "public.txn",
+    "snapshot.mode": "initial",
+    "decimal.handling.mode": "string",
+
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schemas.enable": "false",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false"
+  }
+}

@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: sentinel-aml-engine
+  main:
+    # A consumer, not an API: nothing here serves HTTP.
+    web-application-type: none
+  config:
+    import: classpath:rules.yml
+  datasource:
+    url: ${SENTINEL_DB_URL:jdbc:postgresql://localhost:5432/sentinel}
+    username: ${SENTINEL_DB_USER:catalog}
+    password: ${SENTINEL_DB_PASSWORD:catalog}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      # The ingestion service owns the schema and its migrations; the engine only validates.
+      ddl-auto: validate
+    open-in-view: false
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: sentinel-detection-engine
+      auto-offset-reset: earliest
+
+logging:
+  level:
+    com.tushar.sentinel: DEBUG
+
+sentinel:
+  engine:
+    topic: ${SENTINEL_CDC_TOPIC:sentinel.public.txn}
